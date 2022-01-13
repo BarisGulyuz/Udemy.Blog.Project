@@ -1,0 +1,60 @@
+﻿@model UserUpdateDto
+@{
+    ViewData["Title"] = "Profili Düzenle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<ol class="breadcrumb mb-4 mt-3">
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="User" asp-area="Admin">Kullanıcılar</a></li>
+    <li class="breadcrumb-item"><a asp-action="ChangeDetails" asp-controller="User" asp-area="Admin">Profili Düzenle</a></li>
+</ol>
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="text-center"><span class="fas fa-edit"></span> Profili Düzenle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-controller="User" asp-area="Admin" asp-action="ChangeDetails" id="user-update-form" enctype="multipart/form-data">
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="All" id="validation-summary"> </div>
+
+                    <div class="form-group" style="align-items:center">
+                        <div class="row">
+                            <div class="form-group col-4">
+                                <input type="hidden" asp-for="Picture" />
+                                <img class="img-fluid img-thumbnail" src="~/images/@Model.Picture" width="100" height="100" style="border-radius:50%" />
+                            </div>
+                            <div class="col-8">
+                                <label asp-for="UserName"></label>
+                                <input asp-for="UserName" class="form-control" required placeholder="Kullanıcı Adınız" />
+                                <span class="text-danger" asp-validation-for="UserName"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input type="email" asp-for="Email" class="form-control" required placeholder="Mail Adresiniz" />
+                        <span class="text-danger" asp-validation-for="Email"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber"></label>
+                        <input type="text" asp-for="PhoneNumber" class="form-control" required placeholder="Telefon Numaranız" />
+                        <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="PictureFile"></label>
+                        <input type="file" accept="image/*" asp-for="PictureFile" class="form-control" style="padding: 2px" />
+                        <span class="text-danger" asp-validation-for="PictureFile"></span>
+                    </div>
+                    <div class="form-group">
+                        <a asp-action="Index" asp-controller="Home" asp-area="Admin" as class="btn btn-danger w-100" data-dismiss="modal"><span class="fas fa-times"></span> İptal</a>
+                        <button type="submit" id="btnUpdate" class="btn btn-success w-100 mt-3"><span class="fas fa-save"></span> Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

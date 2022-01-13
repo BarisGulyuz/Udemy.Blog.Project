@@ -40,6 +40,22 @@ namespace Blog.Bussiness.Concrete
             });
         }
 
+        public async Task<IDataResult<int>> Count()
+        {
+            var count = await _unitofWork.Categories.CountAsync();
+            if (count > -1)
+                return new DataResult<int>(Core.Utilities.Results.ResultStatus.Success, count);
+            return new DataResult<int>(Core.Utilities.Results.ResultStatus.Error, -1);
+        }
+
+        public async Task<IDataResult<int>> CountbyNoneDeleted()
+        {
+            var count = await _unitofWork.Categories.CountAsync(x=> !x.IsDeleted);
+            if (count > -1)
+                return new DataResult<int>(Core.Utilities.Results.ResultStatus.Success, count);
+            return new DataResult<int>(Core.Utilities.Results.ResultStatus.Error, -1);
+        }
+
         public async Task<IResult> Delete(int categoryId, string modifiedByName)
         {
             var category = await _unitofWork.Categories.GetAsync(x => x.Id == categoryId);
@@ -57,7 +73,7 @@ namespace Blog.Bussiness.Concrete
 
         public async Task<IDataResult<CategoryListDto>> GetAll()
         {
-            var categories = await _unitofWork.Categories.GetAllAsync(null, x => x.Articles);
+            var categories = await _unitofWork.Categories.GetAllAsync(null);
             if (categories.Count > -1)
             {
                 return new DataResult<CategoryListDto>(Core.Utilities.Results.ResultStatus.Success, new CategoryListDto
@@ -76,7 +92,7 @@ namespace Blog.Bussiness.Concrete
 
         public async Task<IDataResult<CategoryListDto>> GetAllbyDeleted()
         {
-            var categories = await _unitofWork.Categories.GetAllAsync(x => !x.IsDeleted, x => x.Articles);
+            var categories = await _unitofWork.Categories.GetAllAsync(x => !x.IsDeleted);
             if (categories.Count > -1)
             {
                 return new DataResult<CategoryListDto>(Core.Utilities.Results.ResultStatus.Success, new CategoryListDto
@@ -95,7 +111,7 @@ namespace Blog.Bussiness.Concrete
 
         public async Task<IDataResult<CategoryListDto>> GetAllbyDeletedandActive()
         {
-            var categories = await _unitofWork.Categories.GetAllAsync(x => !x.IsDeleted && x.IsActive, x => x.Articles);
+            var categories = await _unitofWork.Categories.GetAllAsync(x => !x.IsDeleted && x.IsActive);
             if (categories.Count > -1)
             {
                 return new DataResult<CategoryListDto>(Core.Utilities.Results.ResultStatus.Success, new CategoryListDto
@@ -128,7 +144,11 @@ namespace Blog.Bussiness.Concrete
             return new DataResult<CategoryDto>(Core.Utilities.Results.ResultStatus.Error, Messages.GeneralGetError, null);
 
         }
-
+        /// <summary>
+        /// Id parametresine ait kategorinin 'categoryUpdateDto' temsilini geriye döner.
+        /// </summary>
+        /// <param name="categoryId">0'a eşit olamaz (categoryId>0)</param>
+        /// <returns>Task olarak DataResult tipinde geriye döner></returns>
         public async Task<IDataResult<CategoryUpdateDto>> GetCategoryUpdateDto(int categoryId)
         {
             var result = await _unitofWork.Categories.AnyAsync(x => x.Id == categoryId);

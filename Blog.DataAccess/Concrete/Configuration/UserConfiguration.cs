@@ -1,4 +1,5 @@
 ﻿using Blog.Entites.Concrete;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -11,48 +12,68 @@ namespace Blog.DataAccess.Concrete.Configuration
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<User> b)
         {
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.Property(x => x.Firstname).IsRequired().HasMaxLength(50);
-            builder.Property(x => x.Surname).IsRequired().HasMaxLength(50);
-            builder.Property(x => x.Email).IsRequired().HasMaxLength(50);
-            builder.HasIndex(x => x.Email).IsUnique();
-            builder.Property(x => x.Username).IsRequired().HasMaxLength(50);
-            builder.HasIndex(x => x.Username).IsUnique();
-            builder.Property(x => x.PasswordHash).IsRequired();
-            builder.Property(x => x.PasswordHash).HasColumnType("VARBINARY(500)");
-            builder.Property(x => x.Firstname).HasMaxLength(500);
-            builder.Property(x => x.CreatedDate).IsRequired();
-            builder.Property(x => x.ModifiedDate).IsRequired();
-            builder.Property(x => x.CreatedByName).HasMaxLength(100);
-            builder.Property(x => x.ModifiedByName).HasMaxLength(100);
-            builder.Property(x => x.IsActive).IsRequired();
-            builder.Property(x => x.IsDeleted).IsRequired();
-            builder.Property(x => x.Note).HasMaxLength(500);
+            b.HasKey(u => u.Id);
 
-            builder.HasOne<Role>(x => x.Role).WithMany(x => x.Users).HasForeignKey(x => x.RoleId);
+            b.HasIndex(u => u.NormalizedUserName).HasDatabaseName("UserNameIndex").IsUnique();
+            b.HasIndex(u => u.NormalizedEmail).HasDatabaseName("EmailIndex");
 
-            builder.HasData(new User
+            b.ToTable("Users");
+
+            b.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
+
+            b.Property(u => u.UserName).HasMaxLength(50);
+            b.Property(u => u.NormalizedUserName).HasMaxLength(50);
+            b.Property(u => u.Email).HasMaxLength(100);
+            b.Property(u => u.NormalizedEmail).HasMaxLength(100);
+
+
+            b.HasMany<UserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+
+            b.HasMany<UserLogin>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
+
+            b.HasMany<UserToken>().WithOne().HasForeignKey(ut => ut.UserId).IsRequired();
+
+            b.HasMany<UserRole>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
+
+
+            var adminUser = new User
             {
                 Id = 1,
-                RoleId = 1,
-                Firstname = "Barış",
-                Surname = "Gülyüz",
-                Username = "BG_Developer",
-                Email = "bar.77@windowslive.com",
-                Description = "İlk Kullanıcı",
-                Picture = "none",
-                PasswordHash = Encoding.ASCII.GetBytes("0192023a7bbd73250516f069df18b500"),
-                IsActive = true,
-                IsDeleted = false,
-                CreatedByName = "InitialCreate",
-                ModifiedByName = "InitialCreate",
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now,
-                Note = "Admin"
-            });
+                UserName = "Admin",
+                NormalizedUserName = "ADMIN",
+                Email = "admin@gmail.com",
+                NormalizedEmail = "ADMIN@GMAIL.COM",
+                PhoneNumber = "+905555556678",
+                Picture = "default.png",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            adminUser.PasswordHash = CreatePasswordHash(adminUser, adminUser.UserName);
+            var editorUser = new User
+            {
+                Id = 2,
+                UserName = "Editör",
+                NormalizedUserName = "EDITOR",
+                Email = "editor@gmail.com",
+                NormalizedEmail = "EDITOR@GMAIL.COM",
+                PhoneNumber = "+905555556678",
+                Picture = "default.png",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+            editorUser.PasswordHash = CreatePasswordHash(editorUser, editorUser.UserName);
+
+            b.HasData(adminUser, editorUser);
+        }
+
+        private string CreatePasswordHash(User user, string password)
+        {
+            var passwordHasher = new PasswordHasher<User>();
+            return passwordHasher.HashPassword(user, password);
         }
     }
 }

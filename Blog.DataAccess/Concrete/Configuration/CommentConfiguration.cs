@@ -27,19 +27,19 @@ namespace Blog.DataAccess.Concrete.Configuration
 
                 builder.HasOne<Article>(x => x.Article).WithMany(x => x.Comments).HasForeignKey(x => x.ArticleId);
 
-                builder.HasData(new Comment
-                {
-                    Id = 1,
-                    ArticleId = 1,
-                    Text = ".NET 6 çok güzel olmuş, harika çok beğendim",
-                    IsActive = true,
-                    IsDeleted = false,
-                    CreatedByName = "InitialCreate",
-                    ModifiedByName = "InitialCreate",
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now,
-                    Note = ".NET 6",
-                });
+                //builder.HasData(new Comment
+                //{
+                //    Id = 1,
+                //    ArticleId = 1,
+                //    Text = ".NET 6 çok güzel olmuş, harika çok beğendim",
+                //    IsActive = true,
+                //    IsDeleted = false,
+                //    CreatedByName = "InitialCreate",
+                //    ModifiedByName = "InitialCreate",
+                //    CreatedDate = DateTime.Now,
+                //    ModifiedDate = DateTime.Now,
+                //    Note = ".NET 6",
+                //});
             }
         }
     }

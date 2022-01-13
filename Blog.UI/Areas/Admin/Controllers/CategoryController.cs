@@ -1,7 +1,12 @@
-﻿using Blog.Bussiness.Abstract;
+﻿using AutoMapper;
+using Blog.Bussiness.Abstract;
 using Blog.Core.Utilities.Extensions;
+using Blog.Entites.Concrete;
 using Blog.Entites.DTOs;
 using Blog.UI.Areas.Admin.Models;
+using Blog.UI.Helpers.Abstract;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,11 +17,12 @@ using System.Threading.Tasks;
 namespace Blog.UI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoryController : Controller
+    [Authorize(Roles = "Admin,Edıtor")]
+    public class CategoryController : BaseController
     {
         ICategoryService _categoryService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, UserManager<User> userManager, IMapper mapper, IImageHelper ımageHelper) : base(userManager, mapper, ımageHelper)
         {
             _categoryService = categoryService;
         }
@@ -55,7 +61,7 @@ namespace Blog.UI.Areas.Admin.Controllers
                 });
                 return Json(categoryAddDto);
             }
-            var newCategory = await _categoryService.Add(categoryAddDto, "Admin");
+            var newCategory = await _categoryService.Add(categoryAddDto, LoggedInUser.UserName);
             if (newCategory.ResultStatus == Core.Utilities.Results.ResultStatus.Success)
             {
                 var categoryModel = JsonSerializer.Serialize(new CategoryAddAjaxModel
@@ -87,7 +93,7 @@ namespace Blog.UI.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var newCategory = await _categoryService.Update(categoryUpdateDto, "Admin");
+                var newCategory = await _categoryService.Update(categoryUpdateDto, LoggedInUser.UserName);
                 if (newCategory.ResultStatus == Core.Utilities.Results.ResultStatus.Success)
                 {
                     var categoryModel = JsonSerializer.Serialize(new CategoryUpdateAjaxModel
@@ -109,7 +115,7 @@ namespace Blog.UI.Areas.Admin.Controllers
         [HttpPost]
         public async Task<JsonResult> Delete(int categoryId)
         {
-            var result = await _categoryService.Delete(categoryId, "Barış Gülyüz");
+            var result = await _categoryService.Delete(categoryId, LoggedInUser.UserName);
             var deletedCategory = JsonSerializer.Serialize(result);
             return Json(deletedCategory);
         }

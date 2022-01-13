@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Blog.Bussiness.Abstract;
 using Blog.Bussiness.Constants;
+using Blog.Core.Utilities.Results;
 using Blog.Core.Utilities.Results.Abstract;
 using Blog.Core.Utilities.Results.Concrete;
 using Blog.DataAccess.UnitOfWork;
@@ -25,15 +26,31 @@ namespace Blog.Bussiness.Concrete
             _mapper = mapper;
         }
 
-        public async Task<IResult> Add(ArticleAddDto articleAddDto, string createdByName)
+        public async Task<IResult> Add(ArticleAddDto articleAddDto, string createdByName, int userId)
         {
             var article = _mapper.Map<Article>(articleAddDto);
             article.CreatedByName = createdByName;
             article.ModifiedByName = createdByName;
-            article.UserId = 1;
+            article.UserId = userId;
             await _unitofWork.Articles.AddAsync(article);
             await _unitofWork.SaveAsync();
             return new Result(Core.Utilities.Results.ResultStatus.Success, Messages.GeneralAddESuccess);
+        }
+
+        public async Task<IDataResult<int>> Count()
+        {
+            var count = await _unitofWork.Articles.CountAsync();
+            if (count > -1)
+                return new DataResult<int>(Core.Utilities.Results.ResultStatus.Success, count);
+            return new DataResult<int>(Core.Utilities.Results.ResultStatus.Error, -1);
+        }
+
+        public async Task<IDataResult<int>> CountbyNoneDeleted()
+        {
+            var count = await _unitofWork.Articles.CountAsync(x => !x.IsDeleted);
+            if (count > -1)
+                return new DataResult<int>(Core.Utilities.Results.ResultStatus.Success, count);
+            return new DataResult<int>(Core.Utilities.Results.ResultStatus.Error, -1);
         }
 
         public async Task<IResult> Delete(int articleId, string modifiedByName)
@@ -43,6 +60,7 @@ namespace Blog.Bussiness.Concrete
             {
                 var article = await _unitofWork.Articles.GetAsync(x => x.Id == articleId);
                 article.IsDeleted = true;
+                article.IsActive = false;
                 article.ModifiedByName = modifiedByName;
                 article.ModifiedDate = DateTime.Now;
                 await _unitofWork.Articles.UpdateAsync(article);
@@ -132,6 +150,18 @@ namespace Blog.Bussiness.Concrete
             return new DataResult<ArticleDto>(Core.Utilities.Results.ResultStatus.Error, Messages.GeneralGetError, null);
         }
 
+        public async Task<IDataResult<ArticleUpdateDto>> GetArticleUpdateDto(int articleId)
+        {
+            var result = await _unitofWork.Articles.AnyAsync(x => x.Id == articleId);
+            if (result)
+            {
+                var article = await _unitofWork.Articles.GetAsync(x => x.Id == articleId, x => x.Category);
+                var articleUpdateDto = _mapper.Map<ArticleUpdateDto>(article);
+                return new DataResult<ArticleUpdateDto>(Core.Utilities.Results.ResultStatus.Success, articleUpdateDto);
+            }
+            return new DataResult<ArticleUpdateDto>(Core.Utilities.Results.ResultStatus.Error, Messages.GeneralGetError, null);
+        }
+
         public async Task<IResult> HardDelete(int articleId)
         {
             var result = await _unitofWork.Articles.AnyAsync(x => x.Id == articleId);
@@ -147,11 +177,12 @@ namespace Blog.Bussiness.Concrete
 
         public async Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifiedByName)
         {
-            var article = _mapper.Map<Article>(articleUpdateDto);
+            var oldArticle = await _unitofWork.Articles.GetAsync(a => a.Id == articleUpdateDto.Id);
+            var article = _mapper.Map<ArticleUpdateDto, Article>(articleUpdateDto, oldArticle);
             article.ModifiedByName = modifiedByName;
             await _unitofWork.Articles.UpdateAsync(article);
             await _unitofWork.SaveAsync();
-            return new Result(Core.Utilities.Results.ResultStatus.Success, Messages.GeneralUpdateSuccess);
+            return new Result(ResultStatus.Success, "");
         }
     }
 }

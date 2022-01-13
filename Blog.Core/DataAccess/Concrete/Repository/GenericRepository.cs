@@ -13,7 +13,7 @@ namespace Blog.Core.DataAccess.Concrete.Repository
     public class GenericRepository<T> : IRepository<T>
        where T : class, IEntity, new()
     {
-        private readonly DbContext _context;
+        protected readonly DbContext _context;  //türeyen sınıflar DbContext'e erişebilmesi için protected olarak güncellendi, (was private)
 
         public GenericRepository(DbContext context)
         {
@@ -32,9 +32,9 @@ namespace Blog.Core.DataAccess.Concrete.Repository
 
         }
 
-        public async Task<int> CountAsync(Expression<Func<T, bool>> filter)
+        public async Task<int> CountAsync(Expression<Func<T, bool>> filter = null)
         {
-            return await _context.Set<T>().CountAsync(filter);
+            return await (filter == null ? _context.Set<T>().CountAsync()  : _context.Set<T>().CountAsync(filter));
         }
 
         public async Task DeleteAsync(T entity)
@@ -45,10 +45,8 @@ namespace Blog.Core.DataAccess.Concrete.Repository
         public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
+            query = query.Where(filter);
+
             if (includes.Any())
             {
                 foreach (var include in includes)

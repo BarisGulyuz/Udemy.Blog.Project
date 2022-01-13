@@ -49,5 +49,7 @@ namespace Blog.Entites.DTOs
         public bool IsActive { get; set; }
         [DisplayName("Pasif Mi?")]
         public bool IsDeleted { get; set; }
+        [Required]
+        public int UserId { get; set; }
     }
 }

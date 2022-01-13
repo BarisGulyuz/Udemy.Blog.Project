@@ -10,7 +10,11 @@
     string Silinmemiş = "Silinmemiş";
 }
 
-
+<ol class="breadcrumb mb-4 mt-3">
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Category" asp-area="Admin">İçerik Yönetimi</a></li>
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Category" asp-area="Admin">Kategori</a></li>
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Category" asp-area="Admin">Kategori Listesi</a></li>
+</ol>
 
 @if (Model.ResultStatus == ResultStatus.Success)
 {

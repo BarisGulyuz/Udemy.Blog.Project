@@ -14,9 +14,9 @@ namespace Blog.Core.DataAccess.Abstract
         Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes);
 
         Task<T> AddAsync(T entity); //Jquery-Ajax için T tipinde return
-        Task<T> UpdateAsync(T entity);
+        Task<T> UpdateAsync(T entity); //Jquery-Ajax için T tipinde return
         Task DeleteAsync(T entity);
         Task<bool> AnyAsync(Expression<Func<T, bool>> filter);
-        Task<int> CountAsync(Expression<Func<T, bool>> filter);
+        Task<int> CountAsync(Expression<Func<T, bool>> filter = null);
     }
 }

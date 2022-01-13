@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Blog.Bussiness</name>
+    </assembly>
+    <members>
+        <member name="M:Blog.Bussiness.Abstract.ICategoryService.GetCategoryUpdateDto(System.Int32)">
+            <summary>
+            Id parametresine ait kategorinin 'categoryUpdateDto' temsilini geriye döner.
+            </summary>
+            <param name="categoryId">0'a eşit olamaz (categoryId>0)</param>
+            <returns>Task olarak DataResult tipinde geriye döner</returns>
+        </member>
+        <member name="M:Blog.Bussiness.Concrete.CategoryManager.GetCategoryUpdateDto(System.Int32)">
+            <summary>
+            Id parametresine ait kategorinin 'categoryUpdateDto' temsilini geriye döner.
+            </summary>
+            <param name="categoryId">0'a eşit olamaz (categoryId>0)</param>
+            <returns>Task olarak DataResult tipinde geriye döner></returns>
+        </member>
+    </members>
+</doc>

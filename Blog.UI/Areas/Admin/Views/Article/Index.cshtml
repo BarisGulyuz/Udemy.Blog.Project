@@ -1,0 +1,88 @@
+﻿@model ArticleListDto
+@{
+    ViewData["Title"] = "Makalaler";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<ol class="breadcrumb mb-4 mt-3">
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Article" asp-area="Admin">İçerik Yönetimi</a></li>
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Article" asp-area="Admin">Makale</a></li>
+    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Article" asp-area="Admin">Makale Listesi</a></li>
+</ol>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table mr-1"></i>
+        Makaleler
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="articles-table" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Kategori</th>
+                        <th>Görsel</th>
+                        <th>Başlık</th>
+                        <th>Tarih</th>
+                        <th>Okunma Sayısı</th>
+                        <th>Yorum Sayısı</th>
+                        <th>Kayıt Yapan Kullanıcı</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>Güncelleme Yapan Kullanıcı</th>
+                        <th>Güncelleme Tarihi</th>
+                        <th>Aktif mi?</th>
+                        <th>Silinmiş mi?</th>
+                        <td>İşlemler</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Articles)
+                    {
+                        <tr name="@item.Id">
+                            <td>@item.Id</td>
+                            <td>@item.Category.Title</td>
+                            <td><img src="~/images/@item.Tumbnail" width="100" height="100" style="border-radius:50%" /></td>
+                            <td>@item.Title</td>
+                            <td>@item.Date.ToShortDateString()</td>
+                            <td>@item.ViewsCount</td>
+                            <td>@item.CommentCount</td>
+                            <td>@item.CreatedDate.ToShortDateString()</td>
+                            <td>@item.CreatedByName</td>
+                            <td>@item.ModifiedDate.ToShortDateString()</td>
+                            <td>@item.ModifiedByName</td>
+                            <td>
+                                @if (item.IsActive == true)
+                                {
+                                    <span class="badge badge-success">Aktif</span>
+                                }
+                                @if (item.IsActive == false)
+                                {
+                                    <span class="badge badge-danger">Pasif</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsDeleted == true)
+                                {
+                                    <span class="badge badge-danger">Silinmiş</span>
+                                }
+                                @if (item.IsDeleted == false)
+                                {
+                                    <span class="badge badge-success">Silinmiş</span>
+                                }
+                            </td>
+                            <td>
+                                <a id="btn-article-delete" class="btn btn-outline-danger btn-sm" data-id="@item.Id" ><span class="fas fa-minus-circle"></span></a>
+                                <a id="btn-article-update" class="btn btn-outline-warning btn-sm" asp-area="Admin" asp-action="Update" asp-controller="Article" asp-route-articleId="@item.Id"><span class="fas fa-edit"></span></a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script{
+    <script src="~/js/articleIndex.js"></script>
+}

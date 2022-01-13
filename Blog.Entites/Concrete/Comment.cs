@@ -12,5 +12,6 @@ namespace Blog.Entites.Concrete
         public int ArticleId { get; set; }
         public Article Article { get; set; }
         public string Text { get; set; }
+        //public override bool IsActive { get; set; } = false;
     }
 }

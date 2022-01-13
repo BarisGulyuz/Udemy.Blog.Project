@@ -11,31 +11,36 @@ namespace Blog.DataAccess.Concrete.Configuration
 {
     public class RoleConfiguraiton : IEntityTypeConfiguration<Role>
     {
-        public void Configure(EntityTypeBuilder<Role> builder)
+        public void Configure(EntityTypeBuilder<Role> b)
         {
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.Property(x => x.Description).IsRequired().HasMaxLength(250);
-            builder.Property(x => x.CreatedDate).IsRequired();
-            builder.Property(x => x.ModifiedDate).IsRequired();
-            builder.Property(x => x.CreatedByName).HasMaxLength(100);
-            builder.Property(x => x.ModifiedByName).HasMaxLength(100);
-            builder.Property(x => x.IsActive).IsRequired();
-            builder.Property(x => x.IsDeleted).IsRequired();
-            builder.Property(x => x.Note).HasMaxLength(500);
+            b.HasKey(r => r.Id);
 
-            builder.HasData(new Role
+            b.HasIndex(r => r.NormalizedName).HasDatabaseName("RoleNameIndex").IsUnique();
+
+            b.ToTable("Roles");
+
+            b.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
+
+            b.Property(u => u.Name).HasMaxLength(100);
+            b.Property(u => u.NormalizedName).HasMaxLength(100);
+
+            b.HasMany<UserRole>().WithOne().HasForeignKey(ur => ur.RoleId).IsRequired();
+
+            b.HasMany<RoleClaim>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
+
+            b.HasData(new Role
             {
                 Id = 1,
                 Name = "Admin",
-                Description = "Tüm alanlara erişimi ve yetkisi vardır",
-                IsActive = true,
-                IsDeleted = false,
-                CreatedByName = "InitialCreate",
-                ModifiedByName ="InitialCreate",
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now,
-                Note="Admin"
+                NormalizedName = "ADMIN",
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            },
+            new Role
+            {
+                Id = 2,
+                Name = "Edıtor",
+                NormalizedName = "EDITOR",
+                ConcurrencyStamp = Guid.NewGuid().ToString()
             });
         }
     }

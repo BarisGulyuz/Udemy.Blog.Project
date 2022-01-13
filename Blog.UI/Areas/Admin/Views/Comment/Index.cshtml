@@ -1,0 +1,115 @@
+﻿@model CommentListDto
+@{
+    ViewData["Title"] = "Yorumlar";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<ol class="breadcrumb mb-3 mt-2">
+    <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
+    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Comment" asp-action="Index">Yorumlar</a></li>
+</ol>
+<div id="modalPlaceHolder" aria-hidden="true"></div>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table mr-1"></i>
+        Yorumlar
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="commentsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Makale</th>
+                        <th>Yorum İçeriği</th>
+                        <th>Aktif Mi?</th>
+                        <th>Silinmiş Mi?</th>
+                        <th>Oluşturulma Tarihi</th>
+                        <th>Oluşturan Kullanıcı Adı</th>
+                        <th>Son Düzenlenme Tarihi</th>
+                        <th>Son Düzenleyen Kullanıcı Adı</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <tr name="@comment.Id">
+                            <td>@comment.Id</td>
+                            <td>@comment.Article.Title</td>
+                            <td>@(comment.Text.Length>75 ? comment.Text.Substring(0, 75):comment.Text)</td>
+                            <td>@(comment.IsActive ? "Evet" : "Hayır")</td>
+                            <td>@(comment.IsDeleted ? "Evet" : "Hayır")</td>
+                            <td>@comment.CreatedDate.ToShortDateString()</td>
+                            <td>@comment.CreatedByName</td>
+                            <td>@comment.ModifiedDate.ToShortDateString()</td>
+                            <td>@comment.ModifiedByName</td>
+                            <td>
+                                @if (!comment.IsActive)
+                                {
+                                    <button id="btn-appr" class="btn btn-warning btn-sm btn-approve" data-id="@comment.Id"><span class="fas fa-thumbs-up"></span></button>
+                                }
+                                <button class="btn btn-info btn-sm btn-detail" data-id="@comment.Id"><span class="fas fa-newspaper"></span></button>
+                                <button class="btn btn-primary btn-sm mt-1 btn-update" data-id="@comment.Id"><span class="fas fa-edit"></span></button>
+                                <button class="btn btn-danger btn-sm mt-1 btn-delete" data-id="@comment.Id"><span class="fas fa-minus-circle"></span></button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section script
+{
+    <script src="~/js/commentIndex.js" type="application/ecmascript"></script>
+    <script>
+
+        $(document).on('click', '.btn-approve', function (event) {
+            const id = $(this).attr('data-id')
+            //const tableRow = $(`[name="${id}"]`)
+            //const commentId = tableRow.find('td:eq(1)').text()
+            console.log(id)
+
+            event.preventDefault()
+            Swal.fire({
+                title: 'Onaylamak istediğine emin misin?',
+                text: `"${id}" numaralı kategori onaylanacaktır!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet',
+                cancelButtonText: 'Hayır'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        /*dataType: 'json',*/
+                        data: { commentId: id },
+                        url: '/Admin/Comment/Approve',
+                        success: function (data) {
+                            const result = jQuery.parseJSON(data)
+                            console.log(result)
+                                Swal.fire(
+                                    'Silindi!',
+                                    'Yorum Onaylandı.',
+                                    'success'
+                                )
+                                window.location.reload()
+
+                        },
+                        error: function (errors) {
+                            console.log(errors)
+                        }
+                    })
+
+                }
+            })
+        })
+    </script>
+}
+@section css
+{
+
+}

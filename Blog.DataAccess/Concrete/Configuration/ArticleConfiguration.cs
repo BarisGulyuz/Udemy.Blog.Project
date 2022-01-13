@@ -32,30 +32,30 @@ namespace Blog.DataAccess.Concrete.Configuration
             builder.HasOne<User>(x => x.User).WithMany(x => x.Articles).HasForeignKey(x => x.UserId);
 
 
-            string content = ".Net 6 sürümü ile hedeflenen en temel feature .Net 5 ile başlayan birleştirme senaryosunun son kısımlarını sunmaktır.";
-            builder.HasData(new Article
-            {
-                Id = 1,
-                CategoryId = 1,
-                UserId = 1,
-                Title = ".NET 6 Yenilikleri",
-                Content = content,
-                Tumbnail = "Default.jpg",
-                SeoDescription = ".NET 6 Yenilikleri",
-                SeoTags = "c#, .NEt, .NET 6",
-                SeoAuthor = "Barış Gülyüz",
-                Date = DateTime.Now,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedByName = "InitialCreate",
-                ModifiedByName = "InitialCreate",
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now,
-                Note = ".NET 6",
-                ViewsCount = 100,
-                CommentCount = 1
+            //string content = ".Net 6 sürümü ile hedeflenen en temel feature .Net 5 ile başlayan birleştirme senaryosunun son kısımlarını sunmaktır.";
+            //builder.HasData(new Article
+            //{
+            //    Id = 1,
+            //    CategoryId = 1,
+            //    UserId = 1,
+            //    Title = ".NET 6 Yenilikleri",
+            //    Content = content,
+            //    Tumbnail = "Default.jpg",
+            //    SeoDescription = ".NET 6 Yenilikleri",
+            //    SeoTags = "c#, .NEt, .NET 6",
+            //    SeoAuthor = "Barış Gülyüz",
+            //    Date = DateTime.Now,
+            //    IsActive = true,
+            //    IsDeleted = false,
+            //    CreatedByName = "InitialCreate",
+            //    ModifiedByName = "InitialCreate",
+            //    CreatedDate = DateTime.Now,
+            //    ModifiedDate = DateTime.Now,
+            //    Note = ".NET 6",
+            //    ViewsCount = 100,
+            //    CommentCount = 1
 
-            });
+            //});
         }
     }
 }
