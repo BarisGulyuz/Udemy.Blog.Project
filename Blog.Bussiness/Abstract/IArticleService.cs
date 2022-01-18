@@ -17,6 +17,9 @@ namespace Blog.Bussiness.Abstract
         Task<IDataResult<ArticleListDto>> GetAllbyCategory(int categoryId);
         Task<IDataResult<ArticleListDto>> GetAllbyDeleted();
         Task<IDataResult<ArticleListDto>> GetAllbyDeletedandActive();
+        Task<IDataResult<ArticleListDto>> GetAllbyPages(int? categoryId, int currentPage = 1, int pageSize = 5, bool isAscending = false );
+        Task<IDataResult<ArticleListDto>> Search(string keyword, int currentPage = 1, int pageSize = 5, bool isAscending = false);
+        Task<IDataResult<ArticleListDto>> GetAllByViewCount(bool isAscending, int? takeSize);
         Task<IResult> Add(ArticleAddDto articleAddDto, string createdByName, int userId);
         Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifiedByName);
         Task<IResult> Delete(int articleId, string modifiedByName);

@@ -10,5 +10,6 @@ namespace Blog.Entites.DTOs
     public class UserListDto : DtoGetBase
     {
         public List<User> Users { get; set; }
+      
     }
 }

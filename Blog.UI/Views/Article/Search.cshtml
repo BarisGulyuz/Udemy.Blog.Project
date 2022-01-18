@@ -1,0 +1,111 @@
+﻿@model Blog.UI.Models.ArticlesSearchVM
+@{
+    ViewData["Title"] = "Arama Sonuçları";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Regex regex = new Regex()
+}
+
+<div class="col-md-8">
+    @if (Model.ArticleListDto.Articles.Count == 0)
+    {
+        <div class="alert alert-danger mt-5" role="alert">Görütülenebilecek bir makale bulunamadı.</div>
+    }
+    <form class="mt-4">
+        <input type="hidden" id="keyword" value="@(Model.Keyword)" />
+        <input type="hidden" id="current-page" value="@Model.ArticleListDto.CurrentPage" />
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label class="form-control-label"> <strong>Sayfa Büyüklüğünü Seçiniz</strong></label>
+                <select id="select-page-size" class="form-control">
+                    <option selected="@(Model.ArticleListDto.PageSize==5 ? "selected" : null)" value="5">5</option>
+                    <option selected="@(Model.ArticleListDto.PageSize==10 ? "selected" : null)" value="10">10</option>
+                    <option selected="@(Model.ArticleListDto.PageSize==20 ? "selected" : null)" value="20">20</option>
+                </select>
+            </div>
+            <div class="form-group col-6">
+                <label class="form-control-label"> <strong>Sıralama Türü Seçiniz</strong></label>
+                <select id="select-order-type" class="form-control">
+                    <option selected="@(Model.ArticleListDto.isAscending== false ? "selected" : null)" value="false">En Yeni</option>
+                    <option selected="@(Model.ArticleListDto.isAscending== true ? "selected" : null)" value="true">En Eski</option>
+                </select>
+            </div>
+        </div>
+    </form>
+    @foreach (var item in Model.ArticleListDto.Articles)
+    {
+        <div class="card mb-4 mt-4">
+            <img class="card-img-top" src="~/images/@item.Tumbnail" alt="@item.Title" width="400" height="400">
+            <div class="card-body">
+                <h2 class="card-title">@item.Title</h2>
+                <p class="card-text">@Html.Raw(item.Content.Substring(0, 600))</p>
+            </div>
+            <div class="card-footer text-muted">
+                <div class="row">
+                    <div class="col-5">
+                        <a asp-action="Detail" asp-controller="Article" asp-route-articleId="@item.Id" class="btn btn-primary">Devamını Oku &rarr; </a>
+                    </div>
+                    <div class="col-7">
+                        @item.User.UserName tarafından @item.CreatedDate.ToShortDateString() tarihinde paylaşıldı.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    <!-- Pagination -->
+    <ul class="pagination justify-content-center mb-4">
+        @{
+            @if (Model.ArticleListDto.ShowPrevious)
+            {
+                <li class="page-item)">
+                    <a class="page-link" asp-route-isAscending="@Model.ArticleListDto.isAscending" asp-route-pageSize="@Model.ArticleListDto.PageSize" asp-route-currentPage="@(Model.ArticleListDto.CurrentPage-1)" asp-route-keyword="@Model.Keyword"> Önceki</a>
+                </li>
+            }
+            //MAİN
+            @for (var i = 1; i <= Model.ArticleListDto.TotalPages; i++)
+            {
+
+                <li class="page-item @(i==Model.ArticleListDto.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-route-isAscending="@Model.ArticleListDto.isAscending" asp-route-pageSize="@Model.ArticleListDto.PageSize" asp-route-currentPage="@i" asp-route-keyword="@Model.Keyword"> @i</a>
+                </li>
+
+            }
+            //MAİN
+            @if (Model.ArticleListDto.ShowNext)
+            {
+
+                <li class="page-item)">
+                    <a class="page-link" asp-route-currentPage="@(Model.ArticleListDto.CurrentPage+1)" asp-route-keyword="@Model.Keyword"> Sonraki</a>
+                </li>
+
+            }
+        }
+    </ul>
+
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(function () {
+                const selectPageSize = $('#select-page-size')
+                const selectOrderType = $('#select-order-type')
+                const keyword = $('#keyword').val()
+                const currentPage = $('#current-page').val()
+
+                const keywordQuery = keyword != null ? `&keyword=${keyword}` : null
+
+                selectPageSize.on('change', function () {
+                    window.location = `/?pageSize=${selectPageSize.val()}&isAscending=${selectOrderType.val()}
+                                                                            ${keywordQuery != null ? keywordQuery : null}&currentPage=${currentPage}`
+                })
+
+                selectOrderType.on('change', function () {
+                    window.location = `/?pageSize=${selectPageSize.val()}&isAscending=${selectOrderType.val()}
+                                                                            ${keywordQuery != null ? keywordQuery : null}&currentPage=${currentPage}`
+                })
+
+            })
+        })
+    </script>
+}

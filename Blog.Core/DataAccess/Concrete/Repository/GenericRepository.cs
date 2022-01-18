@@ -1,5 +1,6 @@
 ﻿using Blog.Core.DataAccess.Abstract;
 using Blog.Core.Entites.Abstract;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace Blog.Core.DataAccess.Concrete.Repository
 
         public async Task<int> CountAsync(Expression<Func<T, bool>> filter = null)
         {
-            return await (filter == null ? _context.Set<T>().CountAsync()  : _context.Set<T>().CountAsync(filter));
+            return await (filter == null ? _context.Set<T>().CountAsync() : _context.Set<T>().CountAsync(filter));
         }
 
         public async Task DeleteAsync(T entity)
@@ -72,6 +73,28 @@ namespace Blog.Core.DataAccess.Concrete.Repository
                 }
             }
             return await query.SingleOrDefaultAsync();
+        }
+
+        public async Task<List<T>> SearchAsync(List<Expression<Func<T, bool>>> filters, params Expression<Func<T, object>>[] includes) //LinqKit Nuget
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (filters.Any())
+            {
+                var filterChain = PredicateBuilder.New<T>();
+                foreach (var filter in filters)
+                {
+                    filterChain.Or(filter);
+                }
+                query = query.Where(filterChain);
+            }
+            if (includes.Any())
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return await query.ToListAsync();
         }
 
         public async Task<T> UpdateAsync(T entity)

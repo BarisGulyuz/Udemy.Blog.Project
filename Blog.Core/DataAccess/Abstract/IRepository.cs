@@ -12,7 +12,7 @@ namespace Blog.Core.DataAccess.Abstract
     {
         Task<T> GetAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[] includes);
         Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes);
-
+        Task<List<T>> SearchAsync(List<Expression<Func<T, bool>>> filters, params Expression<Func<T, object>>[] includes);
         Task<T> AddAsync(T entity); //Jquery-Ajax için T tipinde return
         Task<T> UpdateAsync(T entity); //Jquery-Ajax için T tipinde return
         Task DeleteAsync(T entity);

@@ -5,8 +5,9 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Türkçe Blog">
-    <meta name="author" content="Barış Gülyüz">
+    <meta name="description" content="@ViewBag.Description">
+    <meta name="author" content="@ViewBag.Author">
+    <meta name="keywords" content="@ViewBag.Tags" />
 
     <title>@ViewBag.Title - Blog</title>
 
@@ -78,6 +79,7 @@
     <script src="~/blog-home/vendor/jquery/jquery.min.js"></script>
     <script src="~/blog-home/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     @await Component.InvokeAsync("NToastNotify")
+
     @RenderSection("scripts", false)
 </body>
 
